@@ -2,66 +2,73 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pruebachaty · Soundboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ARIAS DESERT — Supervivencia 3D</title>
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#3a1520 0,#170d13 45%,#09090d 100%);color:#fff;display:grid;place-items:center;padding:32px 18px}
-main{width:min(920px,100%);text-align:center}
-h1{font-size:clamp(2rem,6vw,3.6rem);letter-spacing:.08em;margin:0 0 8px;text-transform:uppercase}
-.sub{color:#c7aeb5;margin:0 0 30px}
-.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
-.sound{min-height:142px;border:1px solid #ff6677;border-radius:18px;background:linear-gradient(145deg,#ff334c,#b50928 72%);color:white;box-shadow:0 8px 24px #0008,inset 0 1px #ffffff55;cursor:pointer;padding:18px 10px;font:inherit;font-weight:750;transition:transform .12s,filter .12s,box-shadow .12s}
-.sound:hover{filter:brightness(1.15);transform:translateY(-3px);box-shadow:0 12px 28px #ff173b44}
-.sound:active,.sound.playing{transform:scale(.96);filter:brightness(1.3)}
-.emoji{display:block;font-size:2.25rem;margin-bottom:10px}
-.hint{color:#927d84;font-size:.85rem;margin-top:26px}
-@media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.sound{min-height:120px}}
-@media(min-width:651px) and (max-width:850px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#17120d;font-family:Inter,system-ui,Arial;color:#fff}#game{position:fixed;inset:0}canvas{display:block}
+#hud{position:fixed;inset:0;pointer-events:none;padding:18px;display:flex;flex-direction:column;justify-content:space-between;text-shadow:0 2px 8px #000}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.brand{font-weight:900;letter-spacing:.16em;font-size:clamp(17px,3vw,26px)}.brand span{color:#ffc46a}.panel{background:#100d0bc9;border:1px solid #ffffff24;border-radius:14px;padding:12px 15px;backdrop-filter:blur(8px);min-width:160px}.stat{font-size:12px;color:#e5c9a5;margin:5px 0 3px}.bar{height:7px;background:#51402e;border-radius:9px;overflow:hidden}.fill{height:100%;width:100%;background:linear-gradient(90deg,#e69b44,#ffe0a2);transition:width .2s}.objective{align-self:center;text-align:center;max-width:min(560px,90vw);background:#100d0bc9;border:1px solid #ffffff24;border-radius:14px;padding:11px 18px;font-size:14px}.bottom{display:flex;justify-content:space-between;align-items:end;gap:10px}.help{font-size:12px;color:#f4dfc5;background:#100d0bc9;border-radius:12px;padding:10px 13px;line-height:1.6}.toast{position:fixed;left:50%;top:22%;transform:translate(-50%,-10px);opacity:0;background:#17110be8;border:1px solid #e8b36b;border-radius:12px;padding:12px 18px;font-weight:700;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}#start{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(#120d09a8,#120d09d9);z-index:5;padding:20px}#start .card{width:min(540px,95vw);padding:30px;border:1px solid #e9b46b66;border-radius:22px;background:linear-gradient(145deg,#352416f2,#15100df5);box-shadow:0 25px 90px #0009;text-align:center}h1{font-size:clamp(32px,7vw,58px);letter-spacing:.1em;margin:0;color:#fff0d8}h1 b{color:#ffc46a}.subtitle{color:#d7bd9b;line-height:1.6}.startbtn{border:0;border-radius:12px;padding:14px 25px;background:linear-gradient(120deg,#ffcb7d,#c97932);color:#281608;font-weight:900;font-size:15px;cursor:pointer;margin-top:10px}.small{font-size:11px;color:#b9a28a;margin-top:16px}
+#mobile{position:fixed;bottom:90px;left:12px;right:12px;display:none;justify-content:space-between;pointer-events:none}#mobile .cluster{display:grid;grid-template-columns:repeat(3,48px);gap:5px;pointer-events:auto}#mobile button{width:48px;height:48px;border:1px solid #ffffff55;border-radius:12px;background:#17110bbd;color:white;font-size:18px;touch-action:none}#mobile button:active{background:#b97836}
+@media(max-width:700px){#mobile{display:flex}.help{font-size:10px}.panel{min-width:130px;padding:9px}.objective{font-size:12px}.bottom{align-items:end}}
 </style>
 </head>
 <body>
-<main>
-<h1>Pruebachaty</h1>
-<p class="sub">Pulsa un botón para escuchar su sonido</p>
-<section class="grid" aria-label="Panel de sonidos">
-<button class="sound" data-sound="bell"><span class="emoji">🔔</span>Campana</button>
-<button class="sound" data-sound="dog"><span class="emoji">🐶</span>Perro</button>
-<button class="sound" data-sound="cat"><span class="emoji">🐱</span>Gato</button>
-<button class="sound" data-sound="alarm"><span class="emoji">🚨</span>Alarma</button>
-<button class="sound" data-sound="clap"><span class="emoji">👏</span>Aplausos</button>
-<button class="sound" data-sound="engine"><span class="emoji">🏎️</span>Motor</button>
-<button class="sound" data-sound="laser"><span class="emoji">⚡</span>Láser</button>
-<button class="sound" data-sound="pop"><span class="emoji">💥</span>Estallido</button>
-<button class="sound" data-sound="drum"><span class="emoji">🥁</span>Tambor</button>
-<button class="sound" data-sound="win"><span class="emoji">🏆</span>Victoria</button>
-</section>
-<p class="hint">Consejo: sube el volumen y toca cualquier botón.</p>
-</main>
-<script>
-let ctx;
-function audio(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}
-function tone(freq,start,duration,type='sine',volume=.18,endFreq=null){
- const c=audio(),o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(freq,start);if(endFreq)o.frequency.exponentialRampToValueAtTime(Math.max(1,endFreq),start+duration);g.gain.setValueAtTime(.001,start);g.gain.exponentialRampToValueAtTime(volume,start+.012);g.gain.exponentialRampToValueAtTime(.001,start+duration);o.connect(g);g.connect(c.destination);o.start(start);o.stop(start+duration+.03)
-}
-function noise(start,duration,volume=.15,filter=1200){
- const c=audio(),n=Math.floor(c.sampleRate*duration),b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
- const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=b;f.type='lowpass';f.frequency.value=filter;g.gain.setValueAtTime(volume,start);g.gain.exponentialRampToValueAtTime(.001,start+duration);s.connect(f);f.connect(g);g.connect(c.destination);s.start(start)
-}
-const sounds={
- bell(){let t=audio().currentTime;tone(880,t,.8,'sine',.22,660);tone(1320,t,.65,'sine',.1,990);tone(1760,t,.45,'sine',.06,1320)},
- dog(){let t=audio().currentTime;[0,.22,.5].forEach((v,i)=>{tone(180+i*18,t+v,.13,'sawtooth',.2,95);noise(t+v,.09,.08,900)})},
- cat(){let t=audio().currentTime;tone(650,t,.24,'triangle',.12,950);tone(950,t+.2,.32,'triangle',.12,520)},
- alarm(){let t=audio().currentTime;for(let i=0;i<6;i++)tone(i%2?880:660,t+i*.22,.2,'square',.09)},
- clap(){let t=audio().currentTime;for(let i=0;i<7;i++)noise(t+i*.11,.07,.12,2600)},
- engine(){let t=audio().currentTime;tone(90,t,.95,'sawtooth',.14,260);tone(45,t,.9,'triangle',.12,110)},
- laser(){let t=audio().currentTime;tone(1200,t,.48,'sawtooth',.16,90)},
- pop(){let t=audio().currentTime;noise(t,.24,.22,700);tone(100,t,.22,'sine',.18,35)},
- drum(){let t=audio().currentTime;tone(130,t,.38,'sine',.3,42);noise(t,.06,.07,500)},
- win(){let t=audio().currentTime;[523,659,784,1047].forEach((f,i)=>tone(f,t+i*.14,.42,'triangle',.13))}
-};
-document.querySelectorAll('.sound').forEach(btn=>btn.addEventListener('click',()=>{btn.classList.add('playing');sounds[btn.dataset.sound]();setTimeout(()=>btn.classList.remove('playing'),180)}));
+<div id="game"></div>
+<div id="hud">
+ <div class="top"><div><div class="brand">ARIAS <span>DESERT</span></div><div style="font-size:10px;color:#e5c9a5;letter-spacing:.2em">SURVIVAL DRIVE</div></div>
+ <div class="panel"><div class="stat">COMBUSTIBLE <b id="fuelText">35%</b></div><div class="bar"><div class="fill" id="fuelBar"></div></div><div class="stat">PIEZAS <b id="partsText">0 / 3</b></div><div class="bar"><div class="fill" id="partsBar" style="width:0%"></div></div></div></div>
+ <div class="objective" id="objective">Encuentra 3 piezas para poner el coche en marcha. Acércate a los objetos y pulsa E.</div>
+ <div class="bottom"><div class="help" id="controls">WASD · Mover / conducir<br>E · Recoger · R · Motor<br>Shift · Correr</div><div class="help" id="distance">DISTANCIA<br><b>0 m</b></div></div>
+</div>
+<div class="toast" id="toast"></div>
+<div id="mobile">
+ <div class="cluster"><span></span><button data-key="w">▲</button><span></span><button data-key="a">◀</button><button data-key="s">▼</button><button data-key="d">▶</button></div>
+ <div class="cluster"><button data-key="e">E</button><button data-key="r">R</button></div>
+</div>
+<div id="start"><div class="card"><div style="font-size:12px;letter-spacing:.35em;color:#e7b46f;margin-bottom:12px">UNA AVENTURA EN EL DESIERTO</div><h1>ARIAS <b>DESERT</b></h1><p class="subtitle">Te has quedado tirado en medio de un desierto interminable. Explora las ruinas, encuentra piezas y combustible, repara tu coche y descubre hasta dónde puedes llegar.</p><button class="startbtn" id="play">COMENZAR AVENTURA</button><div class="small">Prototipo 3D para navegador · Se juega con teclado o controles táctiles</div></div></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xc98f59);scene.fog=new THREE.FogExp2(0xc98f59,.006);
+const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.1,650);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.querySelector('#game').appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffdfb5,0x61412a,2.0));const sun=new THREE.DirectionalLight(0xffe0ad,2.6);sun.position.set(-50,90,35);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+const mat=(c,r=.9)=>new THREE.MeshStandardMaterial({color:c,roughness:r});
+const sandMat=mat(0xc69a62),darkSand=mat(0x9d7045),stoneMat=mat(0x75604c),rust=mat(0x814b2d),metal=mat(0x777c7c,.55),tireMat=mat(0x171717),glass= new THREE.MeshStandardMaterial({color:0x243b42,metalness:.4,roughness:.25});
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200),sandMat);ground.rotation.x=-Math.PI/2;ground.position.y=-.15;ground.receiveShadow=true;scene.add(ground);
+const sunBall=new THREE.Mesh(new THREE.SphereGeometry(9,24,16),new THREE.MeshBasicMaterial({color:0xffd18a}));sunBall.position.set(-100,75,-260);scene.add(sunBall);
+const player=new THREE.Group();scene.add(player);player.position.set(0,0,0);
+const body=new THREE.Mesh(new THREE.CapsuleGeometry(.38,.85,5,9),mat(0x354c55));body.position.y=1.05;body.castShadow=true;player.add(body);
+const head=new THREE.Mesh(new THREE.SphereGeometry(.25,16,12),mat(0xc88d65));head.position.y=1.72;player.add(head);
+const pack=new THREE.Mesh(new THREE.BoxGeometry(.48,.55,.25),mat(0x6b4931));pack.position.set(0,1.08,.35);player.add(pack);
+const car=new THREE.Group();scene.add(car);car.position.set(3,0,-4);car.rotation.y=Math.PI;
+function box(parent,w,h,d,m,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
+box(car,2.05,.58,3.8,rust,0,.82,0);box(car,1.72,.72,1.75,metal,0,1.42,-.35);box(car,1.8,.42,1.25,glass,0,1.47,-.42);
+for(const x of [-1,1])for(const z of [-1.25,1.25]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.37,.37,.22,18),tireMat);w.rotation.z=Math.PI/2;w.position.set(x*1.03,.48,z);w.castShadow=true;car.add(w)}
+box(car,1.85,.13,1.05,mat(0x9a542d),0,.45,-1.45);
+const brokenParts=[];const pickups=[];
+function makePickup(type,x,z){const g=new THREE.Group();g.position.set(x,.5,z);if(type==='part'){const p=new THREE.Mesh(new THREE.TorusGeometry(.28,.09,8,16),metal);p.rotation.x=Math.PI/2;g.add(p);const q=box(g,.16,.16,.16,mat(0xe4b66b),0,.12,0)}else{const can=box(g,.42,.62,.32,mat(0xc47b32),0,.25,0);const cap=box(g,.16,.1,.16,metal,0,.62,0)}scene.add(g);pickups.push({g,type,active:true});}
+const rand=(a,b)=>a+Math.random()*(b-a);
+function building(x,z){const g=new THREE.Group();g.position.set(x,0,z);const w=rand(5,9),d=rand(5,8);box(g,w,3,d,mat(0x94734f),0,1.5,0);box(g,w+.3,.35,d+.3,mat(0x493a2c),0,3.05,0);box(g,1.2,2,.18,mat(0x35281e),rand(-1,1),1, d/2+.1);for(let i=0;i<3;i++){const b=box(g,.35,rand(1,2),.35,stoneMat,rand(-w/2,w/2),.5,rand(-d/2,d/2));b.rotation.z=rand(-.5,.5)}scene.add(g)}
+for(let i=0;i<18;i++){const a=rand(12,80),ang=rand(0,Math.PI*2);const x=Math.cos(ang)*a,z=Math.sin(ang)*a;if(i%3===0)building(x,z);else{const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(rand(.5,1.8),0),stoneMat);rock.position.set(x,rand(.2,.8),z);rock.scale.y=.65;rock.castShadow=true;scene.add(rock)}}
+for(let i=0;i<9;i++){const a=rand(9,65),ang=rand(0,Math.PI*2);makePickup(i<6?'part':'fuel',Math.cos(ang)*a,Math.sin(ang)*a)}
+// Repeated distant terrain props are recycled to create an endless-feeling horizon.
+const dunes=[];for(let i=0;i<65;i++){const x=rand(-230,230),z=rand(-230,230);const d=new THREE.Mesh(new THREE.SphereGeometry(rand(7,19),12,8),i%2?sandMat:darkSand);d.scale.set(1,.13,1.4);d.position.set(x,-1.1,z);scene.add(d);dunes.push(d)}
+const keys={};let started=false,engine=false,parts=0,fuel=35,driving=false,distance=0,speed=0,last=performance.now(),toastTimer;
+addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(e.key.toLowerCase()))e.preventDefault();if(e.key.toLowerCase()==='e')interact();if(e.key.toLowerCase()==='r')toggleEngine()});
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>keys[k]=false))});
+function toast(s){const el=document.querySelector('#toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),1900)}
+function toggleEngine(){if(!started)return;if(parts<3){toast('Primero necesitas encontrar 3 piezas');return}if(fuel<=0){toast('No queda combustible. Busca una garrafa.');return}engine=!engine;toast(engine?'Motor arrancado':'Motor apagado')}
+function interact(){if(!started)return;if(!driving){let nearest=null,dist=4;for(const p of pickups){if(!p.active)continue;const d=player.position.distanceTo(p.g.position);if(d<dist){dist=d;nearest=p}}if(nearest){nearest.active=false;scene.remove(nearest.g);if(nearest.type==='part'){parts++;toast('Pieza encontrada · '+parts+'/3')}else{fuel=Math.min(100,fuel+30);toast('Combustible +30%')}updateHud();return}if(parts>=3&&player.position.distanceTo(car.position)<5){driving=true;player.visible=false;toast('¡Coche reparado! Pulsa R para arrancar');return}}else{driving=false;engine=false;player.visible=true;player.position.copy(car.position).add(new THREE.Vector3(2,0,0));toast('Has bajado del coche')}}
+function updateHud(){document.querySelector('#fuelText').textContent=Math.round(fuel)+'%';document.querySelector('#fuelBar').style.width=fuel+'%';document.querySelector('#partsText').textContent=parts+' / 3';document.querySelector('#partsBar').style.width=(parts/3*100)+'%';document.querySelector('#objective').textContent=parts<3?'Encuentra '+(3-parts)+' pieza(s) más. Acércate a los objetos brillantes y pulsa E.':!driving?'¡Ya tienes las piezas! Acércate al coche y pulsa E para conducir.':engine?'Conduce, explora las ruinas y busca combustible.':'Pulsa R para arrancar el motor.'}
+document.querySelector('#play').onclick=()=>{started=true;document.querySelector('#start').style.display='none';toast('Explora el desierto y encuentra las piezas');updateHud()};
+function moveGroup(g,forward,turn,dt,max){g.rotation.y+=turn*dt*1.7;const dir=new THREE.Vector3(Math.sin(g.rotation.y),0,Math.cos(g.rotation.y));g.position.addScaledVector(dir,forward*dt*max);g.position.y=0}
+function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;if(started){if(driving){if(engine){const accel=(keys.w?1:0)-(keys.s?1:0);speed+=accel*dt*10;speed*=Math.pow(.985,dt*60);speed=THREE.MathUtils.clamp(speed,-8,24);if(keys.a)speed*=.99;if(keys.d)speed*=.99;car.rotation.y+=(keys.a?1:0)-(keys.d?1:0);car.rotation.y+=0;const dir=new THREE.Vector3(Math.sin(car.rotation.y),0,Math.cos(car.rotation.y));car.position.addScaledVector(dir,speed*dt);distance+=Math.abs(speed*dt);fuel-=Math.abs(speed)*dt*.018;fuel=Math.max(0,fuel);if(fuel<=0){engine=false;speed=0;toast('Te has quedado sin combustible')}}else speed*=.9; if(keys.e){} }else{const f=(keys.w?1:0)-(keys.s?1:0),t=(keys.a?1:0)-(keys.d?1:0);moveGroup(player,f,t,dt,keys.shift?8:4.5)}}
+const target=driving?car:player;const offset=driving?new THREE.Vector3(0,5,-10):new THREE.Vector3(0,4.2,-7);offset.applyAxisAngle(new THREE.Vector3(0,1,0),target.rotation.y);const desired=target.position.clone().add(offset);camera.position.lerp(desired,1-Math.pow(.001,dt));camera.lookAt(target.position.x,target.position.y+1,target.position.z);
+if(driving&&engine){const d=distance;document.querySelector('#distance').innerHTML='DISTANCIA<br><b>'+Math.floor(d)+' m</b>'}else document.querySelector('#distance').innerHTML='DISTANCIA<br><b>'+Math.floor(distance)+' m</b>';
+if(now%500<20)updateHud();
+}renderer.render(scene,camera)}
+requestAnimationFrame(animate);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script>
-</body>
-</html>
+</body></html>
