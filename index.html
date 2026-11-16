@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pruebachaty · Soundboard</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#3a1520 0,#170d13 45%,#09090d 100%);color:#fff;display:grid;place-items:center;padding:32px 18px}
+main{width:min(920px,100%);text-align:center}
+h1{font-size:clamp(2rem,6vw,3.6rem);letter-spacing:.08em;margin:0 0 8px;text-transform:uppercase}
+.sub{color:#c7aeb5;margin:0 0 30px}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.sound{min-height:142px;border:1px solid #ff6677;border-radius:18px;background:linear-gradient(145deg,#ff334c,#b50928 72%);color:white;box-shadow:0 8px 24px #0008,inset 0 1px #ffffff55;cursor:pointer;padding:18px 10px;font:inherit;font-weight:750;transition:transform .12s,filter .12s,box-shadow .12s}
+.sound:hover{filter:brightness(1.15);transform:translateY(-3px);box-shadow:0 12px 28px #ff173b44}
+.sound:active,.sound.playing{transform:scale(.96);filter:brightness(1.3)}
+.emoji{display:block;font-size:2.25rem;margin-bottom:10px}
+.hint{color:#927d84;font-size:.85rem;margin-top:26px}
+@media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.sound{min-height:120px}}
+@media(min-width:651px) and (max-width:850px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<main>
+<h1>Pruebachaty</h1>
+<p class="sub">Pulsa un botón para escuchar su sonido</p>
+<section class="grid" aria-label="Panel de sonidos">
+<button class="sound" data-sound="bell"><span class="emoji">🔔</span>Campana</button>
+<button class="sound" data-sound="dog"><span class="emoji">🐶</span>Perro</button>
+<button class="sound" data-sound="cat"><span class="emoji">🐱</span>Gato</button>
+<button class="sound" data-sound="alarm"><span class="emoji">🚨</span>Alarma</button>
+<button class="sound" data-sound="clap"><span class="emoji">👏</span>Aplausos</button>
+<button class="sound" data-sound="engine"><span class="emoji">🏎️</span>Motor</button>
+<button class="sound" data-sound="laser"><span class="emoji">⚡</span>Láser</button>
+<button class="sound" data-sound="pop"><span class="emoji">💥</span>Estallido</button>
+<button class="sound" data-sound="drum"><span class="emoji">🥁</span>Tambor</button>
+<button class="sound" data-sound="win"><span class="emoji">🏆</span>Victoria</button>
+</section>
+<p class="hint">Consejo: sube el volumen y toca cualquier botón.</p>
+</main>
+<script>
+let ctx;
+function audio(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}
+function tone(freq,start,duration,type='sine',volume=.18,endFreq=null){
+ const c=audio(),o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(freq,start);if(endFreq)o.frequency.exponentialRampToValueAtTime(Math.max(1,endFreq),start+duration);g.gain.setValueAtTime(.001,start);g.gain.exponentialRampToValueAtTime(volume,start+.012);g.gain.exponentialRampToValueAtTime(.001,start+duration);o.connect(g);g.connect(c.destination);o.start(start);o.stop(start+duration+.03)
+}
+function noise(start,duration,volume=.15,filter=1200){
+ const c=audio(),n=Math.floor(c.sampleRate*duration),b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
+ const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=b;f.type='lowpass';f.frequency.value=filter;g.gain.setValueAtTime(volume,start);g.gain.exponentialRampToValueAtTime(.001,start+duration);s.connect(f);f.connect(g);g.connect(c.destination);s.start(start)
+}
+const sounds={
+ bell(){let t=audio().currentTime;tone(880,t,.8,'sine',.22,660);tone(1320,t,.65,'sine',.1,990);tone(1760,t,.45,'sine',.06,1320)},
+ dog(){let t=audio().currentTime;[0,.22,.5].forEach((v,i)=>{tone(180+i*18,t+v,.13,'sawtooth',.2,95);noise(t+v,.09,.08,900)})},
+ cat(){let t=audio().currentTime;tone(650,t,.24,'triangle',.12,950);tone(950,t+.2,.32,'triangle',.12,520)},
+ alarm(){let t=audio().currentTime;for(let i=0;i<6;i++)tone(i%2?880:660,t+i*.22,.2,'square',.09)},
+ clap(){let t=audio().currentTime;for(let i=0;i<7;i++)noise(t+i*.11,.07,.12,2600)},
+ engine(){let t=audio().currentTime;tone(90,t,.95,'sawtooth',.14,260);tone(45,t,.9,'triangle',.12,110)},
+ laser(){let t=audio().currentTime;tone(1200,t,.48,'sawtooth',.16,90)},
+ pop(){let t=audio().currentTime;noise(t,.24,.22,700);tone(100,t,.22,'sine',.18,35)},
+ drum(){let t=audio().currentTime;tone(130,t,.38,'sine',.3,42);noise(t,.06,.07,500)},
+ win(){let t=audio().currentTime;[523,659,784,1047].forEach((f,i)=>tone(f,t+i*.14,.42,'triangle',.13))}
+};
+document.querySelectorAll('.sound').forEach(btn=>btn.addEventListener('click',()=>{btn.classList.add('playing');sounds[btn.dataset.sound]();setTimeout(()=>btn.classList.remove('playing'),180)}));
+</script>
+</body>
+</html>
